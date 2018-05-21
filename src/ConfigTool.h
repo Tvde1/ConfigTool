@@ -73,7 +73,6 @@ struct ConfigVar<String> : BaseVar {
 
 struct ConfigTool {
 public:
-	ConfigTool();
 	template <typename T>
 	void addVariable(String name, T* pointer) {
 		variables_.push_back(new ConfigVar<T>(name, pointer));

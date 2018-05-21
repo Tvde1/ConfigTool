@@ -35,7 +35,7 @@ void ConfigTool::save() {
 
 	SPIFFS.begin();
 	File f = SPIFFS.open("/config.json", "w");
-	
+
 	String output = "";
 	root.printTo(f);
 
