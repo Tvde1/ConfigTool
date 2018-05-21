@@ -20,7 +20,7 @@ void setup() {
 	Serial.println(config.text);
 	Serial.println(config.number);
 
-	config.name = "I can just assign new values like this.";
+	config.text = "I can just assign new values like this.";
 	config.number = 200;
 
 	Serial.println(config.text);
