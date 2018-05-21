@@ -79,7 +79,7 @@ public:
 	};
 	void load();
 	void save();
-	std::function<void()> getWebHandler(ESP8266WebServer*);
+	std::function<void()> getWebHandler(ESP8266WebServer);
 	void reset();
 private:
 	std::list<BaseVar*> variables_;

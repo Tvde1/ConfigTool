@@ -42,8 +42,8 @@ void ConfigTool::save() {
 	f.close();
 }
 
-std::function<void()> ConfigTool::getWebHandler(ESP8266WebServer* server) {
 	//TODO: This
+std::function<void()> ConfigTool::getWebHandler(ESP8266WebServer server) {
 }
 
 void ConfigTool::reset() {
