@@ -3,9 +3,10 @@
 	Author:	Tvde1
 */
 
-#include <Arduino.h>
-#include <list>
+#include <Arduino.h>;
+#include <list>;
 #include "ArduinoJson.h"
+#include "ESP8266WebServer.h";
 
 #ifndef _ConfigTool_h
 #define _ConfigTool_h
@@ -79,7 +80,7 @@ public:
 	};
 	void load();
 	void save();
-	void getWebPortal();
+	std::function<void()> getWebHandler(ESP8266WebServer*);
 	void reset();
 private:
 	std::list<BaseVar*> variables_;

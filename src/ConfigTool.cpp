@@ -5,7 +5,8 @@
 
 #include "ConfigTool.h";
 #include "FS.h";
-#include "ArduinoJson.h"
+#include "ArduinoJson.h";
+#include "ESP8266WebServer.h";
 
 void ConfigTool::load() {
 	SPIFFS.begin();
@@ -41,7 +42,7 @@ void ConfigTool::save() {
 	f.close();
 }
 
-void ConfigTool::getWebPortal() {
+std::function<void()> ConfigTool::getWebHandler(ESP8266WebServer* server) {
 	//TODO: This
 }
 
