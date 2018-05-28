@@ -1,5 +1,6 @@
 # ConfigTool
 
-A library for easily saving and storing config variables.
+Arduino or ESP8266 libraryy for easy saving and storing config variables.
+Also has a handler to edit them via a webserver.
 
-WIP
+See [this example](https://github.com/Tvde1/ConfigTool/blob/master/examples/ConfigTool/ConfigTool.ino).
