@@ -3,14 +3,21 @@
 	Author:	Tvde1
 */
 
-#include "ConfigTool.h";
-#include "FS.h";
-#include "ArduinoJson.h";
-#include "ESP8266WebServer.h";
-#include <map>;
+#include "ConfigTool.h"
+#include <FS.h>
+#include <ArduinoJson.h>
+#include <SPIFFS.h>
+
+#ifdef ESP8266
+#include <ESP8266WebServer.h>
+#endif
+
+#include <map>
 
 void ConfigTool::load() {
-	SPIFFS.begin();
+	if (!SPIFFS.begin(true)) {
+		Serial.println("SPIFFS Failed");
+	}
 	File f = SPIFFS.open("/config.json", "r");
 	if (!f) {
 		return;
@@ -18,7 +25,6 @@ void ConfigTool::load() {
 
 	DynamicJsonBuffer jsonBuffer;
 	JsonObject& root = jsonBuffer.parseObject(f.readStringUntil('\n'));
-
 	for (auto item : variables_) {
 		item.second->deserialize(&root);
 	}
@@ -37,12 +43,12 @@ void ConfigTool::save() {
 	SPIFFS.begin();
 	File f = SPIFFS.open("/config.json", "w");
 
-	String output = "";
 	root.printTo(f);
 
 	f.close();
 }
 
+#ifdef ESP8266
 String ConfigTool::createWebPage(bool updated) {
 	const String beginHtml = "<html><head><title>Config Tool</title><link rel=\"stylesheet\"href=\"https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css\"integrity=\"sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4\"crossorigin=\"anonymous\"><script src=\"https://code.jquery.com/jquery-3.3.1.slim.min.js\"integrity=\"sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo\"crossorigin=\"anonymous\"></script><script src=\"https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js\"integrity=\"sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ\"crossorigin=\"anonymous\"></script><script src=\"https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js\"integrity=\"sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm\"crossorigin=\"anonymous\"></script></head><body><div class=\"container\"><div class=\"jumbotron\"style=\"width:100%\"><h1>ConfigTool Web Interface</h1><p>Edit the config variables here and click save.</p></div>";
 	const String continueHtml = "<form method=\"POST\" action=\"\">";
@@ -99,9 +105,10 @@ std::function<void()> ConfigTool::getWebHandler(ESP8266WebServer* server) {
 		return;
 	};
 }
+#endif
 
 void ConfigTool::reset() {
-	SPIFFS.begin();
+	SPIFFS.begin(true);
 	SPIFFS.remove("/config.json");
 
 	for (auto item : variables_) {

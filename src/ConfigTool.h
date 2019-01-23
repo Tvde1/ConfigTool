@@ -3,11 +3,15 @@
 	Author:	Tvde1
 */
 
-#include <Arduino.h>;
-#include <map>;
-#include "ArduinoJson.h"
-#include "ESP8266WebServer.h";
-#include <string>;
+#include <Arduino.h>
+#include <map>
+#include <ArduinoJson.h>
+
+#ifdef ESP8266
+#include <ESP8266WebServer.h>
+#endif
+
+#include <string>
 
 #ifndef _ConfigTool_h
 #define _ConfigTool_h
@@ -148,11 +152,19 @@ public:
 	};
 	void load();
 	void save();
+
+#ifdef ESP8266
 	std::function<void()> getWebHandler(ESP8266WebServer*);
+#endif
+
 	void reset();
 private:
 	std::map<String, BaseVar*> variables_;
+
+#ifdef ESP8266
 	String createWebPage(bool);
+#endif
+
 };
 
 #endif
