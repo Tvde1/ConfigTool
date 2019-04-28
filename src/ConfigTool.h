@@ -2,24 +2,18 @@
 	Name:	ConfigTool.h
 	Author:	Tvde1
 */
+#ifndef _ConfigTool_h
+#define _ConfigTool_h
 
 #include <Arduino.h>
 #include <map>
 #include <ArduinoJson.h>
 
-#ifdef ESP8266
-#include <ESP8266WebServer.h>
-#endif
-
-#include <string>
-
-#ifndef _ConfigTool_h
-#define _ConfigTool_h
 
 struct BaseVar {
 	String name;
-	virtual void serialize(JsonObject*) = 0;
-	virtual void deserialize(JsonObject*) = 0;
+	virtual void serialize(JsonDocument) = 0;
+	virtual void deserialize(JsonDocument) = 0;
 	virtual void reset() = 0;
 	virtual String toString() = 0;
 	virtual void fromString(String) = 0;
@@ -29,9 +23,9 @@ template <typename T>
 struct ConfigVar : BaseVar {
 	ConfigVar(String n, T* p) {};
 
-	void deserialize(JsonObject *json) {};
+	void deserialize(JsonDocument json) {};
 
-	void serialize(JsonObject* json) {};
+	void serialize(JsonDocument json) {};
 
 	void reset() {};
 
@@ -50,16 +44,12 @@ struct ConfigVar<String> : BaseVar {
 		defaultValue = *p;
 	};
 
-	void deserialize(JsonObject *json) {
-		if (json->containsKey(name) && json->is<char*>(name)) {
-
-			*pointer = String{ json->get<char *>(name) };
-			json->remove(name);
-		}
+	void deserialize(JsonDocument json) {
+		*pointer = String{ json[name] | defaultValue };
 	}
 
-	void serialize(JsonObject* json) {
-		json->set(name, *pointer);
+	void serialize(JsonDocument json) {
+		json[name] = *pointer;
 	}
 
 	void reset() {
@@ -85,16 +75,14 @@ struct ConfigVar<bool> : BaseVar {
 		defaultValue = *p;
 	};
 
-	void deserialize(JsonObject *json) {
-		if (json->containsKey(name) && json->is<bool>(name)) {
-
-			*pointer = json->get<bool>(name);
-			json->remove(name);
+	void deserialize(JsonDocument json) {
+		if (!json[name].isNull()) {
+			*pointer = json[name];
 		}
 	}
 
-	void serialize(JsonObject* json) {
-		json->set(name, *pointer);
+	void serialize(JsonDocument json) {
+		json[name] =  *pointer;
 	}
 
 	void reset() {
@@ -120,15 +108,14 @@ struct ConfigVar<int> : BaseVar {
 		defaultValue = *p;
 	};
 
-	void deserialize(JsonObject *json) {
-		if (json->containsKey(name) && json->is<int>(name)) {
-			*pointer = json->get<int>(name);
-			json->remove(name);
+	void deserialize(JsonDocument json) {
+		if (!json[name].isNull()) {
+			*pointer = json[name];
 		}
 	}
 
-	void serialize(JsonObject* json) {
-		json->set(name, *pointer);
+	void serialize(JsonDocument json) {
+		json[name] = *pointer;
 	}
 
 	void reset() {
@@ -152,18 +139,11 @@ public:
 	};
 	void load();
 	void save();
-
-#ifdef ESP8266
-	std::function<void()> getWebHandler(ESP8266WebServer*);
-#endif
+	int ConfigSize = 1024;
 
 	void reset();
 private:
 	std::map<String, BaseVar*> variables_;
-
-#ifdef ESP8266
-	String createWebPage(bool);
-#endif
 
 };
 
