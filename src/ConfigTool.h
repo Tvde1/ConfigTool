@@ -5,15 +5,14 @@
 #ifndef _ConfigTool_h
 #define _ConfigTool_h
 
-#include <Arduino.h>
 #include <map>
 #include <ArduinoJson.h>
 
 
 struct BaseVar {
 	String name;
-	virtual void serialize(JsonDocument) = 0;
-	virtual void deserialize(JsonDocument) = 0;
+	virtual void serialize(JsonDocument*) = 0;
+	virtual void deserialize(JsonDocument*) = 0;
 	virtual void reset() = 0;
 	virtual String toString() = 0;
 	virtual void fromString(String) = 0;
@@ -23,9 +22,9 @@ template <typename T>
 struct ConfigVar : BaseVar {
 	ConfigVar(String n, T* p) {};
 
-	void deserialize(JsonDocument json) {};
+	void deserialize(JsonDocument* json) {};
 
-	void serialize(JsonDocument json) {};
+	void serialize(JsonDocument* json) {};
 
 	void reset() {};
 
@@ -44,12 +43,12 @@ struct ConfigVar<String> : BaseVar {
 		defaultValue = *p;
 	};
 
-	void deserialize(JsonDocument json) {
-		*pointer = String{ json[name] | defaultValue };
+	void deserialize(JsonDocument* json) {
+		*pointer = String{ (*json)[name] | defaultValue };
 	}
 
-	void serialize(JsonDocument json) {
-		json[name] = *pointer;
+	void serialize(JsonDocument* json) {
+		(*json)[name] = *pointer;
 	}
 
 	void reset() {
@@ -75,14 +74,14 @@ struct ConfigVar<bool> : BaseVar {
 		defaultValue = *p;
 	};
 
-	void deserialize(JsonDocument json) {
-		if (!json[name].isNull()) {
-			*pointer = json[name];
+	void deserialize(JsonDocument* json) {
+		if (!(*json)[name].isNull()) {
+			*pointer = (*json)[name];
 		}
 	}
 
-	void serialize(JsonDocument json) {
-		json[name] =  *pointer;
+	void serialize(JsonDocument* json) {
+		(*json)[name] =  *pointer;
 	}
 
 	void reset() {
@@ -108,14 +107,14 @@ struct ConfigVar<int> : BaseVar {
 		defaultValue = *p;
 	};
 
-	void deserialize(JsonDocument json) {
-		if (!json[name].isNull()) {
-			*pointer = json[name];
+	void deserialize(JsonDocument* json) {
+		if (!(*json)[name].isNull()) {
+			*pointer = (*json)[name];
 		}
 	}
 
-	void serialize(JsonDocument json) {
-		json[name] = *pointer;
+	void serialize(JsonDocument* json) {
+		(*json)[name] = *pointer;
 	}
 
 	void reset() {

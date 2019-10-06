@@ -5,9 +5,7 @@
 
 #include "ConfigTool.h"
 #include <FS.h>
-#include <ArduinoJson.h>
 #include <SPIFFS.h>
-#include <map>
 
 void ConfigTool::load() {
 	if (!SPIFFS.begin(true)) {
@@ -21,7 +19,7 @@ void ConfigTool::load() {
 	DynamicJsonDocument root(ConfigSize);
 	deserializeJson(root, f.readStringUntil('\n'));
 	for (auto item : variables_) {
-		item.second->deserialize(root);
+		item.second->deserialize(&root);
 	}
 
 	f.close();
@@ -31,12 +29,13 @@ void ConfigTool::save() {
 	DynamicJsonDocument root(ConfigSize);
 
 	for (auto item : variables_) {
-		item.second->serialize(root);
+		item.second->serialize(&root);
 	}
-
-	SPIFFS.begin();
+	
+	SPIFFS.begin(true);
 	File f = SPIFFS.open("/config.json", "w");
 	serializeJson(root, f);
+	f.close();
 }
 
 void ConfigTool::reset() {
