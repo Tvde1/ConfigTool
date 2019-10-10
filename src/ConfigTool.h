@@ -7,6 +7,7 @@
 
 #include <map>
 #include <ArduinoJson.h>
+#include <WebServer.h>
 
 
 struct BaseVar {
@@ -132,18 +133,22 @@ struct ConfigVar<int> : BaseVar {
 
 struct ConfigTool {
 public:
+	int ConfigSize = 1024;
+
 	template <typename T>
 	void addVariable(String name, T* pointer) {
 		variables_[name] = (new ConfigVar<T>(name, pointer));
 	};
+
 	void load();
 	void save();
-	int ConfigSize = 1024;
-
 	void reset();
+
+	std::function<void()> getWebHandler(WebServer*);
+
 private:
 	std::map<String, BaseVar*> variables_;
-
+	String createWebPage(bool);
 };
 
 #endif
