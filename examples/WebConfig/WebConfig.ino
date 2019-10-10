@@ -9,7 +9,7 @@
 #include <ESPmDNS.h>
 
 const char* ssid = "<ssid>";
-const char* password = "pwd>";
+const char* password = "<pwd>";
 
 String config_String_1 = "Default";
 String config_String_2 = "Test";
@@ -78,7 +78,7 @@ void setup(){
 
   server.on("/", handleRoot);
 
-  server.on("/config", configTool.getWebHandler(server));
+  server.on("/config", configTool.getWebHandler(&server));
 
   server.onNotFound(handleNotFound);
 
