@@ -9,6 +9,9 @@
 #include <ArduinoJson.h>
 #include <WebServer.h>
 
+#define VT_TEXT 1
+#define VT_BOOL 2
+#define VT_NUM  3
 
 struct BaseVar {
 	String name;
@@ -17,6 +20,8 @@ struct BaseVar {
 	virtual void reset() = 0;
 	virtual String toString() = 0;
 	virtual void fromString(String) = 0;
+	
+	virtual int varType() = 0;
 };
 
 template <typename T>
@@ -24,14 +29,12 @@ struct ConfigVar : BaseVar {
 	ConfigVar(String n, T* p) {};
 
 	void deserialize(JsonDocument* json) {};
-
 	void serialize(JsonDocument* json) {};
-
 	void reset() {};
-
 	String toString() { return "";  };
-
 	void fromString(String) {};
+
+	int varType() {return -1;};
 };
 
 template <>
@@ -62,6 +65,10 @@ struct ConfigVar<String> : BaseVar {
 
 	void fromString(String value) {
 		*pointer = value;
+	}
+
+	int varType() {
+		return VT_TEXT;
 	}
 };
 
@@ -96,6 +103,10 @@ struct ConfigVar<bool> : BaseVar {
 	void fromString(String value) {
 		*pointer = value == "true";
 	}
+
+	int varType() {
+		return VT_BOOL;
+	}
 };
 
 template <>
@@ -129,6 +140,10 @@ struct ConfigVar<int> : BaseVar {
 	void fromString(String value) {
 		*pointer = value.toInt();
 	}
+
+	int varType() {
+		return VT_NUM;
+	}
 };
 
 struct ConfigTool {
@@ -148,6 +163,7 @@ public:
 
 private:
 	std::map<String, BaseVar*> variables_;
+	String createBoolTag(String, String, String, bool);
 	String createWebPage(bool);
 };
 
