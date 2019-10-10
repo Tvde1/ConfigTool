@@ -15,6 +15,9 @@
 
 struct BaseVar {
 	String name;
+	bool hideInWeb = false;
+	bool hideValueInWeb = false;
+	
 	virtual void serialize(JsonDocument*) = 0;
 	virtual void deserialize(JsonDocument*) = 0;
 	virtual void reset() = 0;
@@ -151,8 +154,11 @@ public:
 	int ConfigSize = 1024;
 
 	template <typename T>
-	void addVariable(String name, T* pointer) {
-		variables_[name] = (new ConfigVar<T>(name, pointer));
+	void addVariable(String name, T* pointer, bool hide = false, bool hideVal = false) {
+		ConfigVar<T>* var = new ConfigVar<T>(name, pointer);
+		var->hideInWeb = hide;
+		var->hideValueInWeb = hideVal;
+		variables_[name] = var;
 	};
 
 	void load();
@@ -163,7 +169,8 @@ public:
 
 private:
 	std::map<String, BaseVar*> variables_;
-	String createBoolTag(String, String, String, bool);
+	String createInput(BaseVar*, String);
+	String createBoolSelector(ConfigVar<bool>*, String, String, bool);
 	String createWebPage(bool);
 };
 

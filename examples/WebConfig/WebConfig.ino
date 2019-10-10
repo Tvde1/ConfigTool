@@ -23,11 +23,12 @@ WebServer server(80);
 
 void initVariables() {
   configTool.addVariable("String1", &config_String_1);
-  configTool.addVariable("String2", &config_String_2);
+  configTool.addVariable("String2", &config_String_2, false, true);
   configTool.addVariable("int___1", &config_int_1);
-  configTool.addVariable("int___2", &config_int_2);
+  configTool.addVariable("int___2", &config_int_2, true);
   configTool.addVariable("bool__F", &config_bool_F);
   configTool.addVariable("bool__T", &config_bool_T);
+  configTool.addVariable("bool__X", &config_bool_T, false, true);
 }
 
 

@@ -47,13 +47,25 @@ void ConfigTool::reset() {
 	}
 }
 
-String ConfigTool::createBoolTag(String name, String label, String display, bool checked) {
+String ConfigTool::createInput(BaseVar *item, String type) {
+	String result = "<input name=\"" + item->name + "\" type=\"" +type+ "\" value=\"";
 
-	String result = "<input name=\"" + name + "\" type=\"radio\" id=\"_" +label+ "_\" value=\"" +label+ "\" ";
+	if (!item->hideValueInWeb) {
+		result += item->toString();
+	}
+	result += "\" />";
 
-	if (checked) result += "checked ";
-	
-	result += "><label for=\"_" +label+ "_\">" +display+ "</label> ";
+	return result;
+}
+
+String ConfigTool::createBoolSelector(ConfigVar<bool> *item, String label, String display, bool checked) {
+
+	String result = "<input name=\"" + item->name + "\" type=\"radio\" id=\"_" +label+ "_\" value=\"" +label+ "\" ";
+
+	if (checked) {
+		result += "checked ";
+	}
+	result += "><label for=\"_" +label+ "_\"> " +display+ "</label> ";
 
 	return result;
 }
@@ -78,8 +90,8 @@ String ConfigTool::createWebPage(bool updated) {
 	static const String endHtml = 
 				"</table>"
 				"<p>"
-					"<button type=\"submit\">Save</button>"
-					"<button type=\"submit\" name=\"reset\">Reset</button>"
+					"<button type=\"submit\">Save</button><br/><br/>"
+					"<button type=\"submit\" name=\"reset\">Reset</button> be careful!"
 				"</p>"
 			"</form>"
 		"</body>"
@@ -90,10 +102,12 @@ String ConfigTool::createWebPage(bool updated) {
 	if (updated) {
 		result += savedAlert;
 	}
-
 	result += continueHtml;
 
 	for (auto item : variables_) {
+		
+		if (item.second->hideInWeb) continue;
+		
 		result += 
 			"<tr>"
 				"<td><label>" + item.first + "</label></td>"
@@ -102,20 +116,26 @@ String ConfigTool::createWebPage(bool updated) {
 		switch (item.second->varType()) {
 			
 			case VT_TEXT:
-				result += 
-					"<input name=\"" + item.first + "\" type=\"text\" value=\"" + item.second->toString() + "\" />";
+				result += createInput(item.second, "text");
+				//<input name=\"" + item.first + "\" type=\"text\" value=\"";
+				//if (!item.second->hideValueInWeb) result += item.second->toString();
+				//result += "\" />";
 				break;
 			
 			case VT_NUM:
-				result += 
-					"<input name=\"" + item.first + "\" type=\"number\" value=\"" + item.second->toString() + "\" />";
+				result += createInput(item.second, "number");
+				//result += "<input name=\"" + item.first + "\" type=\"number\" value=\"";
+				//if (!item.second->hideValueInWeb) result += item.second->toString();
+				//result += "\" />";
 				break;
 			
 			case VT_BOOL:
-				const bool val = *(((ConfigVar<bool>*)item.second)->pointer);
+				bool val = *(((ConfigVar<bool>*)item.second)->pointer);
 				result += "<fieldset>";
-				result += createBoolTag(item.first, "true", "on", val);
-				result += createBoolTag(item.first, "false", "off", !val);
+				result += createBoolSelector((ConfigVar<bool>*)item.second, "true",  "on",  val  && !item.second->hideValueInWeb);
+				result += createBoolSelector((ConfigVar<bool>*)item.second, "false", "off", !val && !item.second->hideValueInWeb);
+//				result += createBoolTag(item.first, "true", "on", val && !item.second->hideValueInWeb);
+//				result += createBoolTag(item.first, "false", "off", !val && !item.second->hideValueInWeb);
 				result += "</fieldset>";
 				break;
 		
@@ -145,21 +165,25 @@ std::function<void()> ConfigTool::getWebHandler(WebServer* server) {
 			updated = true;
 		}
 		else {
-			Serial.write("Args hit: ");
 			for (int i = 0; i < server->args(); i++) {
 				String name = server->argName(i);
 				
-				if (name == "reset") Serial.print("....oops....");
-				
 				auto item = variables_.find(name);
-				Serial.print(name + "=" + server->arg(name) + " | ");
 				if (item == variables_.end()) {
 					continue;
 				}
+				String val = server->arg(name);
+				
+				Serial.println(name + "=" + val);
+				
+				// skip empty input for values that are not displayed
+				if (item->second->hideValueInWeb && val == "") {
+					continue;
+				}
+					
 				updated = true;
-				item->second->fromString(server->arg(name));
+				item->second->fromString(val);
 			}
-			Serial.println();
 		}
 		save();
 
