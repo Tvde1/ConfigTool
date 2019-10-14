@@ -1,0 +1,13 @@
+# main class
+ConfigTool	KEYWORD1
+
+# structs for variables
+BaseVar	KEYWORD3
+ConfigVar	KEYWORD3
+
+# public functions of ConfigTool
+load	KEYWORD2
+save	KEYWORD2
+reset	KEYWORD2
+addVariable	KEYWORD2
+getWebHandler	KEYWORD2
