@@ -7,7 +7,16 @@
 
 #include <map>
 #include <ArduinoJson.h>
-#include <WebServer.h>
+
+#if defined(ARDUINO_ARCH_ESP8266) //ESP8266
+    #include <ESP8266WebServer.h>
+	#define WebServer ESP8266WebServer
+#elif defined(ARDUINO_ARCH_ESP32) //ESP32
+    #include <SPIFFS.h>
+    #include <WebServer.h>
+#else
+	#error "unsupported architecture - intended for ESP32 and ESP8266"
+#endif
 
 #define VT_TEXT 1
 #define VT_BOOL 2
@@ -166,7 +175,7 @@ public:
 	void reset();
 
 	std::function<void()> getWebHandler(WebServer*);
-
+	
 private:
 	std::map<String, BaseVar*> variables_;
 	String createInput(BaseVar*, String);

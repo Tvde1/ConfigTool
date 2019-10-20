@@ -5,10 +5,16 @@
 
 #include "ConfigTool.h"
 #include <FS.h>
-#include <SPIFFS.h>
+#if defined(ARDUINO_ARCH_ESP32) //ESP32
+	#include <SPIFFS.h>
+#endif
 
 void ConfigTool::load() {
+#if defined(ARDUINO_ARCH_ESP32) //ESP32
 	if (!SPIFFS.begin(true)) {
+#else
+	if (!SPIFFS.begin()) {
+#endif
 		Serial.println("SPIFFS Failed");
 	}
 	File f = SPIFFS.open("/config.json", "r");
@@ -32,14 +38,14 @@ void ConfigTool::save() {
 		item.second->serialize(&root);
 	}
 	
-	SPIFFS.begin(true);
+	SPIFFS.begin();
 	File f = SPIFFS.open("/config.json", "w");
 	serializeJson(root, f);
 	f.close();
 }
 
 void ConfigTool::reset() {
-	SPIFFS.begin(true);
+	SPIFFS.begin();
 	SPIFFS.remove("/config.json");
 
 	for (auto item : variables_) {

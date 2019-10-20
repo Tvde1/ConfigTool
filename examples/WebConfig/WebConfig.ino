@@ -3,10 +3,19 @@
  */
 
 #include <ConfigTool.h>
-#include <WiFi.h>
-#include <WiFiClient.h>
-#include <WebServer.h>
-#include <ESPmDNS.h>
+
+#if defined(ARDUINO_ARCH_ESP8266) //ESP8266
+  #include <ESP8266WiFi.h>
+  #include <ESP8266WebServer.h>
+  #include <ESP8266mDNS.h>
+  #define MDNS_NAME "esp8266"
+#elif defined(ARDUINO_ARCH_ESP32) //ESP32
+  #include <WiFi.h>
+  #include <WiFiClient.h>
+  #include <WebServer.h>
+  #include <ESPmDNS.h>
+  #define MDNS_NAME "esp32"
+#endif 
 
 const char* ssid = "<ssid>";
 const char* password = "<pwd>";
@@ -17,6 +26,7 @@ int    config_int_1    = 100;
 int    config_int_2    = 200;
 bool   config_bool_F   = false;
 bool   config_bool_T   = true;
+
 
 ConfigTool configTool;
 WebServer server(80);
@@ -73,7 +83,7 @@ void setup(){
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
 
-  if (MDNS.begin("esp32")) {
+  if (MDNS.begin(MDNS_NAME)) {
     Serial.println("MDNS responder started");
   }
 
