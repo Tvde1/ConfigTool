@@ -5,8 +5,11 @@
  * 
  */
 
-
-#include <SPIFFS.h>
+#ifdef ARDUINO_ARCH_ESP8266
+  #include <FS.h>
+#elif ARDUINO_ARCH_ESP32
+  #include <SPIFFS.h>
+#endif
 #include <ConfigTool.h>
 
 String config_String_1 = "Default";
@@ -20,7 +23,7 @@ ConfigTool configTool;
 
 bool dumpConfig(bool check){
 
-  File file = SPIFFS.open("/config.json");
+  File file = SPIFFS.open("/config.json", "r");
   if(!file){
     Serial.println("reading - config failed");
     return false;
@@ -68,7 +71,7 @@ void setup(){
   Serial.begin(115200);
   Serial.println("Setup begin");
   
-  if(!SPIFFS.begin(false)){
+  if(!SPIFFS.begin()){
     Serial.println("setup - SPIFFS begin failed");
     return;
   }
