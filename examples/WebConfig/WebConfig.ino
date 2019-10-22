@@ -43,7 +43,7 @@ void initVariables() {
 
 
 void handleRoot() {
-  server.send(200, "text/plain", "hello from esp32!");
+  server.send(200, "text/plain", "hello from esp!");
 }
 
 void handleNotFound() {
@@ -69,6 +69,9 @@ void setup(){
   configTool.load();
 
   WiFi.mode(WIFI_STA);
+  Serial.print("MAC: ");
+  Serial.println(WiFi.macAddress());
+
   WiFi.begin(ssid, password);
   Serial.println("");
 
