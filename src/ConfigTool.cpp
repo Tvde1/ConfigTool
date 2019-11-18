@@ -135,6 +135,10 @@ String ConfigTool::createWebPage(bool updated) {
 				//result += "\" />";
 				break;
 			
+			case VT_IP:
+				result += createInput(item.second, "text");
+				break;
+			
 			case VT_BOOL:
 				bool val = *(((ConfigVar<bool>*)item.second)->pointer);
 				result += "<fieldset>";
@@ -152,6 +156,15 @@ String ConfigTool::createWebPage(bool updated) {
 			"</tr>";
 	}
 
+/*
+	result+="<tr><td>";
+	File f = SPIFFS.open("/config.json", "r");
+	while (f and f.available()) {
+		result += f.read();
+	}
+	result+="</td></tr>";
+*/
+	
 	result += endHtml;
 
 	//Serial.println(result);

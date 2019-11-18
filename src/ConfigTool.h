@@ -20,7 +20,8 @@
 
 #define VT_TEXT 1
 #define VT_BOOL 2
-#define VT_NUM  3
+#define VT_NUM 3
+#define VT_IP 4
 
 struct BaseVar {
 	String name;
@@ -157,6 +158,48 @@ struct ConfigVar<int> : BaseVar {
 		return VT_NUM;
 	}
 };
+
+template <>
+struct ConfigVar<IPAddress> : BaseVar {
+	IPAddress* pointer;
+	IPAddress defaultValue;
+	ConfigVar(String n, IPAddress* p) {
+		name = n;
+		pointer = p;
+		defaultValue = *p;
+	};
+
+	void deserialize(JsonDocument* json) {
+		if (!(*json)[name].isNull()) {
+			String txt = String{ (*json)[name] | "" };
+			Serial.println(txt);
+			if (!pointer->fromString(txt)) {
+				reset();
+			}
+		}
+	}
+
+	void serialize(JsonDocument* json) {
+		(*json)[name] = toString();
+	}
+
+	void reset() {
+		*pointer = uint32_t(defaultValue);
+	}
+
+	String toString() {
+		return pointer->toString();
+	}
+
+	void fromString(String value) {
+		pointer->fromString(value);
+	}
+
+	int varType() {
+		return VT_IP;
+	}
+};
+
 
 struct ConfigTool {
 public:

@@ -26,7 +26,7 @@ int    config_int_1    = 100;
 int    config_int_2    = 200;
 bool   config_bool_F   = false;
 bool   config_bool_T   = true;
-
+IPAddress config_IP_1  = IPAddress(192,168,1,99);
 
 ConfigTool configTool;
 WebServer server(80);
@@ -39,6 +39,7 @@ void initVariables() {
   configTool.addVariable("bool__F", &config_bool_F);
   configTool.addVariable("bool__T", &config_bool_T);
   configTool.addVariable("bool__X", &config_bool_T, false, true);
+  configTool.addVariable("IP____1", &config_IP_1);
 }
 
 
