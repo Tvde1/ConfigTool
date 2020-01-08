@@ -3,11 +3,11 @@
 	Author:	Tvde1
 */
 
-#include "ConfigTool.h";
-#include "FS.h";
-#include "ArduinoJson.h";
-#include "ESP8266WebServer.h";
-#include <map>;
+#include "ConfigTool.h"
+#include "FS.h"
+#include "ArduinoJson.h"
+#include "ESP8266WebServer.h"
+#include <map>
 
 void ConfigTool::load() {
 	SPIFFS.begin();

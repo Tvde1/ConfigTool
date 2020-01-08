@@ -3,11 +3,11 @@
 	Author:	Tvde1
 */
 
-#include <Arduino.h>;
-#include <map>;
+#include <Arduino.h>
+#include <map>
 #include "ArduinoJson.h"
-#include "ESP8266WebServer.h";
-#include <string>;
+#include "ESP8266WebServer.h"
+#include <string>
 
 #ifndef _ConfigTool_h
 #define _ConfigTool_h
