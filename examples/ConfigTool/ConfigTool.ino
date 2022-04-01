@@ -17,14 +17,14 @@ void setup() {
 	
 	configTool.load();
 
-	Serial.println(config.text);
-	Serial.println(config.number);
+	Serial.println(config.text); // This is my default text.
+	Serial.println(config.number); // 100
 
 	config.text = "I can just assign new values like this.";
 	config.number = 200;
 
-	Serial.println(config.text);
-	Serial.println(config.number);
+	Serial.println(config.text); // I can just assign new values like this.
+	Serial.println(config.number); // 200
 
 	configTool.save();
 	//Values are saved now and will be put back on reset with .load
@@ -32,8 +32,8 @@ void setup() {
 	configTool.reset();
 	//Reset the tool and assign the default values.
 
-	Serial.println(config.text);
-	Serial.println(config.number);
+	Serial.println(config.text); // This is my default text.
+	Serial.println(config.number); // 100
 
 	configTool.save();
 }
