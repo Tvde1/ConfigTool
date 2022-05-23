@@ -50,3 +50,7 @@ void loop() {
 
 }
 ```
+It also contains a web interface which can be added like:
+```cpp
+server.on("/config", configTool.getWebHandler(&server));
+```
